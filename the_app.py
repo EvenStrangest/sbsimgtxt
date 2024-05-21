@@ -1,9 +1,9 @@
 import os
 import sys
 
-from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QTextEdit, QPushButton
-from PyQt5.QtGui import QPixmap, QImage, QIcon
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QTextEdit, QPushButton, QShortcut
+from PyQt5.QtGui import QPixmap, QImage, QIcon, QKeySequence
+from PyQt5.QtCore import Qt, QEvent
 
 
 class ImageViewer(QWidget):
@@ -32,8 +32,24 @@ class ImageViewer(QWidget):
         self.currentIndex = 0
         self.loadContent(self.currentIndex)
 
-        # Keyboard events
-        self.keyPressEvent = self.changeImage
+        # Setup shortcuts
+        self.setupShortcuts()
+
+    def setupShortcuts(self):
+        QShortcut(QKeySequence(Qt.Key_PageUp), self, activated=self.previousImage)
+        QShortcut(QKeySequence(Qt.Key_PageDown), self, activated=self.nextImage)
+
+    def previousImage(self):
+        if self.currentIndex > 0:
+            self.saveText()
+            self.currentIndex -= 1
+            self.loadContent(self.currentIndex)
+
+    def nextImage(self):
+        if self.currentIndex < len(self.files) - 1:
+            self.saveText()
+            self.currentIndex += 1
+            self.loadContent(self.currentIndex)
 
     def loadContent(self, index):
         if index < 0 or index >= len(self.files):
@@ -50,16 +66,6 @@ class ImageViewer(QWidget):
                 self.textEdit.setPlainText(file.read())
         else:
             self.textEdit.setPlainText("")
-
-    def changeImage(self, event):
-        if event.key() == Qt.Key_PageUp:
-            self.saveText()
-            self.currentIndex = (self.currentIndex - 1) % len(self.files)
-            self.loadContent(self.currentIndex)
-        elif event.key() == Qt.Key_PageDown:
-            self.saveText()
-            self.currentIndex = (self.currentIndex + 1) % len(self.files)
-            self.loadContent(self.currentIndex)
 
     def saveText(self):
         text_path = os.path.join(self.directory, 'generated', self.files[self.currentIndex]).replace('.png', '_central_table.txt')
