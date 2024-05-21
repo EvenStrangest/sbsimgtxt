@@ -2,7 +2,7 @@ import os
 import sys
 
 from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QTextEdit, QPushButton, QShortcut
-from PyQt5.QtGui import QPixmap, QImage, QIcon, QKeySequence
+from PyQt5.QtGui import QPixmap, QImage, QIcon, QKeySequence, QFont
 from PyQt5.QtCore import Qt, QEvent
 
 
@@ -24,6 +24,8 @@ class ImageViewer(QWidget):
         # Right text edit
         self.textEdit = QTextEdit(self)
         self.textEdit.setFixedSize(768, 1366)
+        font = QFont("Consolas", 16)  # Set font type and size
+        self.textEdit.setFont(font)
         hbox.addWidget(self.textEdit)
 
         # Load images and text
@@ -66,6 +68,9 @@ class ImageViewer(QWidget):
                 self.textEdit.setPlainText(file.read())
         else:
             self.textEdit.setPlainText("")
+
+        # Set window title to the active image filename
+        self.setWindowTitle(os.path.basename(self.files[index]))
 
     def saveText(self):
         text_path = os.path.join(self.directory, 'generated', self.files[self.currentIndex]).replace('.png', '_central_table.txt')
