@@ -1,7 +1,8 @@
 import os
 import sys
 
-from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QTextEdit, QPushButton, QShortcut
+from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QTextEdit, QPushButton, QShortcut, \
+    QSpacerItem, QSizePolicy
 from PyQt5.QtGui import QPixmap, QImage, QIcon, QKeySequence, QFont
 from PyQt5.QtCore import Qt, QEvent
 
@@ -21,12 +22,16 @@ class ImageViewer(QWidget):
         self.imageLabel.setFixedSize(768, 1366)  # Set fixed size for the image display
         hbox.addWidget(self.imageLabel)
 
-        # Right text edit
+        # Right text edit, added to a separate vertical layout to move it lower
+        textLayout = QVBoxLayout()
+        spacer = QSpacerItem(0, 0, QSizePolicy.Fixed, QSizePolicy.Fixed)  # Adjust the spacer size as needed
+        textLayout.addItem(spacer)
         self.textEdit = QTextEdit(self)
-        self.textEdit.setFixedSize(768, 1366)
-        font = QFont("Consolas", 16)  # Set font type and size
+        self.textEdit.setFixedSize(768, 710)  # Adjusted size to match layout requirements
+        font = QFont("Consolas", 11)
         self.textEdit.setFont(font)
-        hbox.addWidget(self.textEdit)
+        textLayout.addWidget(self.textEdit)
+        hbox.addLayout(textLayout)
 
         # Load images and text
         self.directory = "G:/My Drive/Workplaces/Panta Rhei/Projects/Equashield first part/Param logs 2024MAY08/"
