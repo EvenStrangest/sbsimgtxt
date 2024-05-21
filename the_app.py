@@ -1,11 +1,8 @@
 import os
 import sys
-
-from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QTextEdit, QPushButton, QShortcut, \
-    QSpacerItem, QSizePolicy
-from PyQt5.QtGui import QPixmap, QImage, QIcon, QKeySequence, QFont
-from PyQt5.QtCore import Qt, QEvent
-
+from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QTextEdit, QSpacerItem, QSizePolicy, QShortcut
+from PyQt5.QtGui import QPixmap, QFont, QKeySequence, QTextBlockFormat, QTextCursor
+from PyQt5.QtCore import Qt
 
 class ImageViewer(QWidget):
     def __init__(self):
@@ -27,8 +24,8 @@ class ImageViewer(QWidget):
         spacer = QSpacerItem(0, 0, QSizePolicy.Fixed, QSizePolicy.Fixed)  # Adjust the spacer size as needed
         textLayout.addItem(spacer)
         self.textEdit = QTextEdit(self)
-        self.textEdit.setFixedSize(768, 710)  # Adjusted size to match layout requirements
-        font = QFont("Consolas", 11)
+        self.textEdit.setFixedSize(768, 720)  # Adjusted size to match layout requirements
+        font = QFont("Consolas", 10)
         self.textEdit.setFont(font)
         textLayout.addWidget(self.textEdit)
         hbox.addLayout(textLayout)
@@ -41,6 +38,23 @@ class ImageViewer(QWidget):
 
         # Setup shortcuts
         self.setupShortcuts()
+
+    def adjustLineHeight(self):
+        cursor = self.textEdit.textCursor()  # Get current cursor from the textEdit
+        position = cursor.position()  # Save the current cursor position
+
+        # Set up the block format for fixed line height
+        block_format = QTextBlockFormat()
+        block_format.setLineHeight(17, QTextBlockFormat.FixedHeight)
+
+        # Apply block format to the entire document without changing the cursor selection
+        cursor.select(QTextCursor.Document)
+        cursor.mergeBlockFormat(block_format)
+        cursor.clearSelection()  # Clear any selection
+
+        # Restore the cursor to its original position
+        cursor.setPosition(position)
+        self.textEdit.setTextCursor(cursor)
 
     def setupShortcuts(self):
         QShortcut(QKeySequence(Qt.Key_PageUp), self, activated=self.previousImage)
@@ -71,8 +85,10 @@ class ImageViewer(QWidget):
         if os.path.exists(text_path):
             with open(text_path, 'r') as file:
                 self.textEdit.setPlainText(file.read())
+                self.adjustLineHeight()  # Adjust line height each time text is loaded
         else:
             self.textEdit.setPlainText("")
+            self.adjustLineHeight()  # Adjust line height even if text is empty
 
         # Set window title to the active image filename
         self.setWindowTitle(os.path.basename(self.files[index]))
@@ -82,14 +98,12 @@ class ImageViewer(QWidget):
         with open(text_path, 'w') as file:
             file.write(self.textEdit.toPlainText())
 
-
 def main():
     app = QApplication(sys.argv)
     viewer = ImageViewer()
     viewer.setWindowTitle('Image and Text Viewer')
     viewer.show()
     sys.exit(app.exec_())
-
 
 if __name__ == '__main__':
     main()
