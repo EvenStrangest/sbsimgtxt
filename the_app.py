@@ -1,12 +1,27 @@
 import os
 import sys
+
 from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel, QTextEdit, QSpacerItem, QSizePolicy, QShortcut
 from PyQt5.QtGui import QPixmap, QFont, QKeySequence, QTextBlockFormat, QTextCursor
 from PyQt5.QtCore import Qt
 
+
 class ImageViewer(QWidget):
     def __init__(self):
         super().__init__()
+
+        if False:
+            self.directory = "G:/My Drive/Workplaces/Panta Rhei/Projects/Equashield first part/Param logs 2024MAY08/"
+            self.textbox_height = 720
+            self.pixel_scaling = 1.0
+            self.font_scaling = 1.0
+        else:
+            self.directory = r"G:\.shortcut-targets-by-id\17TZISjQGWmn48wdaugs_Hn8WmX7iyQVT\Panta Rhei\Projects\Equashield first part\Param logs 2024MAY08"
+            self.textbox_height = 720
+            # Adjust the scaling factors as needed
+            self.pixel_scaling = 1.5
+            self.font_scaling = 1.5
+
         self.initUI()
 
     def initUI(self):
@@ -16,7 +31,7 @@ class ImageViewer(QWidget):
 
         # Left image display
         self.imageLabel = QLabel(self)
-        self.imageLabel.setFixedSize(768, 1366)  # Set fixed size for the image display
+        self.imageLabel.setFixedSize(int(self.pixel_scaling * 768), int(self.pixel_scaling * 1366))  # Set fixed size for the image display
         hbox.addWidget(self.imageLabel)
 
         # Right text edit, added to a separate vertical layout to move it lower
@@ -24,14 +39,13 @@ class ImageViewer(QWidget):
         spacer = QSpacerItem(0, 0, QSizePolicy.Fixed, QSizePolicy.Fixed)  # Adjust the spacer size as needed
         textLayout.addItem(spacer)
         self.textEdit = QTextEdit(self)
-        self.textEdit.setFixedSize(768, 720)  # Adjusted size to match layout requirements
-        font = QFont("Consolas", 10)
+        self.textEdit.setFixedSize(int(self.pixel_scaling * 768), int(self.pixel_scaling * self.textbox_height))  # Adjusted size to match layout requirements
+        font = QFont("Consolas", int(self.font_scaling * 10))
         self.textEdit.setFont(font)
         textLayout.addWidget(self.textEdit)
         hbox.addLayout(textLayout)
 
         # Load images and text
-        self.directory = "G:/My Drive/Workplaces/Panta Rhei/Projects/Equashield first part/Param logs 2024MAY08/"
         self.files = sorted([f for f in os.listdir(self.directory) if f.endswith('.png')])
         self.currentIndex = 0
         self.loadContent(self.currentIndex)
@@ -45,7 +59,7 @@ class ImageViewer(QWidget):
 
         # Set up the block format for fixed line height
         block_format = QTextBlockFormat()
-        block_format.setLineHeight(17, QTextBlockFormat.FixedHeight)
+        block_format.setLineHeight(int(self.pixel_scaling * 17), QTextBlockFormat.FixedHeight)
 
         # Apply block format to the entire document without changing the cursor selection
         cursor.select(QTextCursor.Document)
@@ -79,7 +93,7 @@ class ImageViewer(QWidget):
         text_path = os.path.join(self.directory, 'generated', self.files[self.currentIndex]).replace('.png', '_central_table.txt')
 
         # Load and display the image
-        self.imageLabel.setPixmap(QPixmap(image_path).scaled(768, 1366, Qt.KeepAspectRatio))
+        self.imageLabel.setPixmap(QPixmap(image_path).scaled(int(self.pixel_scaling * 768), int(self.pixel_scaling * 1366), Qt.KeepAspectRatio))
 
         # Load and display the text
         if os.path.exists(text_path):
