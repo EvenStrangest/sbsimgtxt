@@ -39,7 +39,7 @@ class ImageViewer(QWidget):
         if index < 0 or index >= len(self.files):
             return
         image_path = os.path.join(self.directory, self.files[index])
-        text_path = image_path.replace('.png', '.txt')
+        text_path = os.path.join(self.directory, 'generated', self.files[self.currentIndex]).replace('.png', '_central_table.txt')
 
         # Load and display the image
         self.imageLabel.setPixmap(QPixmap(image_path).scaled(768, 1366, Qt.KeepAspectRatio))
@@ -62,7 +62,7 @@ class ImageViewer(QWidget):
             self.loadContent(self.currentIndex)
 
     def saveText(self):
-        text_path = os.path.join(self.directory, self.files[self.currentIndex]).replace('.png', '.txt')
+        text_path = os.path.join(self.directory, 'generated', self.files[self.currentIndex]).replace('.png', '_central_table.txt')
         with open(text_path, 'w') as file:
             file.write(self.textEdit.toPlainText())
 
